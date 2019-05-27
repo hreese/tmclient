@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -14,13 +15,13 @@ import (
 const configfilename = "~/.config/tmclient.json"
 
 type TorrentHost struct {
-	Hostname string
-	Username string
-	Password string
-	HTTPS bool
-	Port uint16
+	Hostname     string
+	Username     string
+	Password     string
+	HTTPS        bool
+	Port         uint16
 	DownloadPath string
-	FinalPath string
+	FinalPath    string
 }
 
 type HostConfig map[string]TorrentHost
@@ -45,11 +46,23 @@ func init() {
 }
 
 func (h *TorrentHost) Connect() (*transmissionrpc.Client, error) {
-	return transmissionrpc.New(h.Hostname, h.Username, h.Password,
+	client, err := transmissionrpc.New(h.Hostname, h.Username, h.Password,
 		&transmissionrpc.AdvancedConfig{
 			HTTPS: h.HTTPS,
 			Port:  h.Port,
 		})
+	if err != nil {
+		return nil, err
+	}
+	ok, serverVersion, serverMinimumVersion, err := client.RPCVersion()
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("Remote transmission RPC version (v%d) is incompatible with the transmission library (v%d): remote needs at least v%d",
+			serverVersion, transmissionrpc.RPCVersion, serverMinimumVersion))
+	}
+	return client, nil
 }
 
 func main() {
@@ -58,17 +71,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ok, serverVersion, serverMinimumVersion, err := transmissionbt.RPCVersion()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if !ok {
-		log.Fatalf("Remote transmission RPC version (v%d) is incompatible with the transmission library (v%d): remote needs at least v%d",
-			serverVersion, transmissionrpc.RPCVersion, serverMinimumVersion)
-	}
 	torrents, err := transmissionbt.TorrentGetAll()
 	for _, torrent := range torrents {
 		fmt.Println()
-		spew.Dump(torrent.Name,torrent.DoneDate, torrent.LeftUntilDone, torrent.PercentDone)
+		spew.Dump(torrent.Name, torrent.DoneDate, torrent.LeftUntilDone, torrent.PercentDone)
 	}
 }
