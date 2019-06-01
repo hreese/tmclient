@@ -15,21 +15,27 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
+	"log"
+	"os"
+
+	"github.com/logrusorgru/aurora"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
 )
 
-// listCmd represents the list command
-var listCmd = &cobra.Command{
-	Use:   "list [host]",
-	Short: "List torrents on host",
+// addCmd represents the add command
+var addCmd = &cobra.Command{
+	Use:   "add [host] [torrent…]",
+	Short: "Add torrent files to host",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("No host specified")
+		}
+		if len(args) < 2 {
+			return errors.New("No .torrent files to add")
 		}
 		return nil
 	},
@@ -38,27 +44,29 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		torrents, err := client.TorrentGetAll()
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, t := range torrents {
-			fmt.Printf("%s\n", *t.Name)
+		for _, filename := range args[1:] {
+			_, err = client.TorrentAddFile(filename)
+			if err != nil {
+				fmt.Printf("%s Unable to add %s: %s\n", aurora.Red("❌"), filename, aurora.Bold(err))
+				continue
+			}
+			fmt.Printf("Added %s %s", filename, aurora.Green("✔"))
+			if viper.GetBool("keep") == false {
+				err = os.Remove(filename)
+				if err != nil {
+					fmt.Printf(" %s: %s\n", aurora.Red("♻"), aurora.Bold(err))
+				} else {
+					fmt.Printf(" %s\n", aurora.Green("♻"))
+				}
+			} else {
+				fmt.Println()
+			}
 		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(listCmd)
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(addCmd)
+	addCmd.Flags().BoolP("keep", "k", false, "Keep .torrent files after successful add (default is delete)")
+	_ = viper.BindPFlag("keep", addCmd.Flags().Lookup("keep"))
 }
-
-// ▱▰
