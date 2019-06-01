@@ -17,10 +17,46 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log"
+	"sort"
+
+	"github.com/hekmon/transmissionrpc"
+	"github.com/logrusorgru/aurora"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
 )
+
+func PrintTorrent(t *transmissionrpc.Torrent, width uint) {
+	var (
+		state aurora.Value
+	)
+
+	switch *t.Status {
+	case transmissionrpc.TorrentStatusStopped:
+		// 🛑 ❌
+		if *t.PercentDone < 1 {
+			state = aurora.BrightRed("✗")
+		} else {
+			state = aurora.Green("✗")
+		}
+	case transmissionrpc.TorrentStatusCheckWait:
+		state = aurora.Red("⏳")
+	case transmissionrpc.TorrentStatusCheck:
+		state = aurora.BgCyan("🔍")
+	case transmissionrpc.TorrentStatusDownloadWait:
+		state = aurora.Green("↯")
+	case transmissionrpc.TorrentStatusDownload:
+		state = aurora.Green("↯")
+	case transmissionrpc.TorrentStatusSeedWait:
+		state = aurora.Green("🛏")
+	case transmissionrpc.TorrentStatusSeed:
+		state = aurora.Green("✓")
+	case transmissionrpc.TorrentStatusIsolated:
+		state = aurora.Magenta("❓")
+	}
+
+	fmt.Printf("%s %3.1f%% %s\n", state, *t.PercentDone*100, *t.Name)
+}
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -42,8 +78,20 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
+		sort.SliceStable(torrents, func(i int, j int) bool {
+			switch {
+			case *torrents[i].IsFinished && *torrents[j].IsFinished:
+				return torrents[i].AddedDate.Before(*torrents[j].AddedDate)
+			case *torrents[i].PercentDone < 1 && *torrents[j].PercentDone == 1:
+				return true
+			case *torrents[i].PercentDone == 1 && *torrents[j].PercentDone < 1:
+				return false
+			default:
+				return *torrents[i].PercentDone < *torrents[j].PercentDone
+			}
+		})
 		for _, t := range torrents {
-			fmt.Printf("%s\n", *t.Name)
+			PrintTorrent(t, 80)
 		}
 	},
 }
