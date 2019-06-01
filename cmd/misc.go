@@ -19,6 +19,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/hekmon/transmissionrpc"
 	"github.com/spf13/viper"
@@ -72,5 +73,6 @@ func GetHosts(v *viper.Viper) []string {
 			hostnames = append(hostnames, key)
 		}
 	}
+	sort.Strings(hostnames)
 	return hostnames
 }
