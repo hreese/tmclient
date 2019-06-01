@@ -16,7 +16,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/logrusorgru/aurora"
 	"os"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -37,11 +39,7 @@ var rootCmd = &cobra.Command{
 			fmt.Println("No hosts configured")
 			os.Exit(1)
 		}
-		fmt.Printf("[ Hosts ]\n")
-		for hostname, _ := range viper.GetViper().Sub("hosts").AllSettings() {
-			fmt.Printf("  %s\n", hostname)
-		}
-		//Connect(viper.GetViper(), "one")
+		fmt.Println(aurora.Faint(strings.Join(GetHosts(viper.GetViper()), "\n")))
 	},
 }
 
