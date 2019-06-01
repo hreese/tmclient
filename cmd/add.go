@@ -47,7 +47,7 @@ var addCmd = &cobra.Command{
 		for _, filename := range args[1:] {
 			_, err = client.TorrentAddFile(filename)
 			if err != nil {
-				fmt.Printf("%s Unable to add %s: %s\n", aurora.Red("❌"), filename, aurora.Bold(err))
+				_, _ = fmt.Fprintf(os.Stderr, "%s Unable to add %s: %s\n", aurora.Red("❌"), filename, aurora.Bold(err))
 				continue
 			}
 			fmt.Printf("Added %s %s", filename, aurora.Green("✔"))

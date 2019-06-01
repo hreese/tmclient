@@ -91,7 +91,7 @@ var listCmd = &cobra.Command{
 			}
 		})
 		for _, t := range torrents {
-			PrintTorrent(t, 80)
+			PrintTorrent(t, 80) // TODO: use real terminal width here
 		}
 	},
 }
