@@ -19,6 +19,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+
 	"github.com/hekmon/transmissionrpc"
 	"github.com/spf13/viper"
 )
@@ -33,7 +34,7 @@ import (
 	FinalPath    string
 }*/
 
-func Connect (v *viper.Viper, hostname string) (*transmissionrpc.Client, error) {
+func Connect(v *viper.Viper, hostname string) (*transmissionrpc.Client, error) {
 	if !v.InConfig("hosts") {
 		return nil, errors.New("No hosts configured")
 	}
@@ -48,7 +49,7 @@ func Connect (v *viper.Viper, hostname string) (*transmissionrpc.Client, error) 
 		hostviper.GetString("password"),
 		&transmissionrpc.AdvancedConfig{
 			HTTPS: hostviper.GetBool("https"),
-			Port: uint16(hostviper.GetUint32("port")),
+			Port:  uint16(hostviper.GetUint32("port")),
 		})
 	if err != nil {
 		return nil, err
@@ -61,8 +62,8 @@ func Connect (v *viper.Viper, hostname string) (*transmissionrpc.Client, error) 
 		return nil, errors.New(fmt.Sprintf("Remote transmission RPC version (v%d) is incompatible with the transmission library (v%d): remote needs at least v%d",
 			serverVersion, transmissionrpc.RPCVersion, serverMinimumVersion))
 	}
-	return client, nil}
-
+	return client, nil
+}
 
 func GetHosts(v *viper.Viper) []string {
 	var hostnames []string

@@ -1,4 +1,4 @@
-// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 Heiko Reese <mail@heiko-reese.de>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import (
 var listCmd = &cobra.Command{
 	Use:   "list [host]",
 	Short: "List torrents on host",
-	Long: ``,
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Fatal("No host specified")
@@ -56,3 +56,5 @@ func init() {
 	// is called directly, e.g.:
 	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
+
+// ▱▰

@@ -1,4 +1,4 @@
-// Copyright © 2019 Heiko Reese
+// Copyright © 2019 Heiko Reese <mail@heiko-reese.de>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "tmclient",
 	Short: "List configured hosts",
-	Long: `A rather limited and opinionated client for transmission`,
+	Long:  `A rather limited and opinionated client for transmission`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
