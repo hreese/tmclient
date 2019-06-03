@@ -45,21 +45,22 @@ var addCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		for _, filename := range args[1:] {
+			_, _ = fmt.Fprintf(os.Stderr, "Adding %s ", aurora.Bold(filename))
 			_, err = client.TorrentAddFile(filename)
 			if err != nil {
-				_, _ = fmt.Fprintf(os.Stderr, "%s Unable to add %s: %s\n", aurora.Red("❌"), filename, aurora.Bold(err))
+				_, _ = fmt.Fprintf(os.Stderr, "%s: %s\n", aurora.Red("❌"), aurora.Bold(err))
 				continue
 			}
-			fmt.Printf("Added %s %s", filename, aurora.Green("✔"))
+			_, _ = fmt.Fprintf(os.Stderr, "%s", aurora.Green("✔"))
 			if viper.GetBool("keep") == false {
 				err = os.Remove(filename)
 				if err != nil {
-					fmt.Printf(" %s: %s\n", aurora.Red("♻"), aurora.Bold(err))
+					_, _ = fmt.Fprintf(os.Stderr, " %s: %s\n", aurora.Red("♻"), aurora.Bold(err))
 				} else {
-					fmt.Printf(" %s\n", aurora.Green("♻"))
+					_, _ = fmt.Fprintf(os.Stderr, " %s\n", aurora.Green("♻"))
 				}
 			} else {
-				fmt.Println()
+				_, _ = fmt.Fprintln(os.Stderr)
 			}
 		}
 	},
