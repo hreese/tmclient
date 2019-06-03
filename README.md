@@ -1,8 +1,8 @@
 # About
 
 tmclient is a limited client for the [transmission](https://transmissionbt.com/)
-server. It's focused on a few tasks that enable support handling lots if bittorrent
-files and some automation.
+bittorrent server. It's focused on few tasks that support (the author's way of)
+handling lots of bittorrent files and some automation.
 
 # Configuration
 
@@ -33,7 +33,7 @@ on Windows) which declares all transmission hosts:
 
 ```
 
-You may skip `DownloadPath` amd `FinalPath`. Make sure that the host's names
+You may skip `DownloadPath` amd `FinalPath`. Make sure that the host aliases
 (`server_one` and `number_two` in this example) are unique.
 
 # Usage
