@@ -43,7 +43,7 @@ You may skip `DownloadPath` amd `FinalPath`. Make sure that the host aliases
 1. List details for current downloads
 2. Add new torrent files
 3. Move finished torrents to predefined directory on server
-4. Repeat.
+4. Repeat
 
 Calling `tmclient` (Windows user may need to add `.exe` to all calls) will list
 all configured hosts. All commands and subcommands are documented online (use
