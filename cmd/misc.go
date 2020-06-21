@@ -49,8 +49,9 @@ func Connect(v *viper.Viper, hostname string) (*transmissionrpc.Client, error) {
 		hostviper.GetString("username"),
 		hostviper.GetString("password"),
 		&transmissionrpc.AdvancedConfig{
-			HTTPS: hostviper.GetBool("https"),
-			Port:  uint16(hostviper.GetUint32("port")),
+			HTTPS:     hostviper.GetBool("https"),
+			Port:      uint16(hostviper.GetUint32("port")),
+			UserAgent: "tmclient",
 		})
 	if err != nil {
 		return nil, err
